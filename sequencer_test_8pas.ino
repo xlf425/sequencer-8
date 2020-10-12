@@ -1,18 +1,18 @@
-
-int step1 = 0;
-int step2 = 1;
-int step3 = 2;
-int step4 = 3;
-int step5 = 4;
-int step6 = 5;
-int step7 = 6;
-int step8 = 7;
-const int StartStop = 9;
+int step1 = 2;
+int step2 = 3;
+int step3 = 4;
+int step4 = 5;
+int step5 = 6;
+int step6 = 7;
+int step7 = 8;
+int step8 = 9;
+const int StartStop = 11;
+const int Tempo = 14;
 int buttonState = 0;  
 boolean played = 1;
 boolean justStart = 0;
 boolean justStop = 0; 
-//int inh1 = 5;
+int inh1 = 5;
 
 int knobTempo = A0;
 unsigned long previousTempoMillis = 0;
@@ -21,7 +21,7 @@ unsigned long currentTempoMillis = 0;
 unsigned long previousClkMillis = 0;*/
 int Bpm = 120;
 int step = 0;
-int maxStep = 8;
+int maxStep = 9;
 
 long timeDuration = 25;
 unsigned long previousLedMillis ;
@@ -29,7 +29,7 @@ unsigned long previousLedMillis ;
 const int clockPin = 12;
 boolean clockPinState =0; 
 boolean clockPinStateOld =0;
-const int ledPin = 8;
+const int ledPin = 10;
 
 
 //variable pour les modes
@@ -57,6 +57,66 @@ void setup() {
   pinMode(buttonState, INPUT_PULLUP); 
 }
 
+/*void gestionStep() {
+
+  if (forward) {
+    if  (step < maxStep - 1) {
+      step++;
+    } else {
+      step = 0;
+    }
+  }
+
+  if (backward) {
+    if  (step > 0) {
+      step--;
+    } else {
+      step = maxStep - 1;
+    }
+  }
+  if (randomMode) {
+    step = random(0,maxStep );
+  }
+  
+  clearLed();
+  digitalWrite(step, HIGH);
+}
+void clearLed(){
+  digitalWrite(0, LOW);
+  digitalWrite(1, LOW);
+  digitalWrite(2, LOW);
+  digitalWrite(3, LOW);
+  digitalWrite(4, LOW);
+  digitalWrite(5, LOW);
+  digitalWrite(6, LOW);
+  digitalWrite(7, LOW);
+  digitalWrite(14, LOW);
+  
+}
+*/
+void gestionTempo() {
+  //Bpm = map(analogRead(knobTempo), 0, 1023, 600, 40);
+  currentTempoMillis = millis();
+  //tempo
+  int delayTime = (60000 / Bpm) ;
+  /*switch (buttonState) {
+    case  0 : Bpm = 0; 
+       break; 
+     case  1 : */
+      if (currentTempoMillis - previousTempoMillis >= delayTime ) {
+      if (internalClk) {
+      analogWrite(ledPin, 200);
+      digitalWrite(ledPin, HIGH);
+      previousLedMillis = millis();
+      }
+      gestionStep();
+      previousTempoMillis = currentTempoMillis;
+      //Serial.print("step : ");
+      //Serial.println(step);
+      }
+      //break;
+  //}
+ }
 
 void loop() {
   //digitalWrite(ledPin, LOW);
@@ -76,11 +136,7 @@ void loop() {
       digitalWrite(ledPin, LOW); 
     } 
      buttonState = digitalRead(StartStop);
-  if (buttonState = 1) {
-    
-  } 
 }
-
 void Start() {
   if (buttonState = 0) {
      Serial.println("played");
@@ -138,28 +194,5 @@ void Start() {
           clockPinStateOld = clockPinState; 
     }
 }*/
-void gestionTempo() {
-  //Bpm = map(analogRead(knobTempo), 0, 1023, 600, 40);
-  currentTempoMillis = millis();
-  //tempo
-  int delayTime = (60000 / Bpm) ;
-  /*switch (buttonState) {
-    case  0 : Bpm = 0; 
-       break; 
-    
-    case  1 : */
-      if (currentTempoMillis - previousTempoMillis >= delayTime ) {
-      if (internalClk) {
-      //analogWrite(ledPin, 200);
-      digitalWrite(ledPin, HIGH);
-      previousLedMillis = millis();
-      }
-      gestionStep();
-      previousTempoMillis = currentTempoMillis;
-      //Serial.print("step : ");
-      //Serial.println(step);
-      }
-      //break;
-  //}
- }
+
 }
