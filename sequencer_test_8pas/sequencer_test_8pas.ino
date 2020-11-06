@@ -1,8 +1,12 @@
 /* tempo led and knob */
 const int knobTempo = A0;
-const int pinTempo = 8;
+const int pinTempo = 10;
+const int forward = 0;
+const int backward = 1;
+const int randomMode = 2;
+int maxStep = 9;
 
-const int stepLeds = 8;
+const int stepPin = 9;
 
 const long minute = 60000;
 
@@ -20,7 +24,7 @@ void loop()
 
 /* read the current tempo from 112 to 1000 */
 int readTempo(){
-  return map(analogRead(knobTempo), 0, 1023, 60, 300);
+  return map(analogRead(knobTempo), 0, 1023, 1000, 112);
 }
 
 void blinkTempoLed(int bpm){
@@ -42,29 +46,25 @@ void blinkTempoLed(int bpm){
   }
 }
 
-void blinkStepLed(int playMode){
+void blinkStepPin(int playMode){
   static int actualStep = 0;
-  const int forward = 0;
-  const int backward = 1;
-  const int random = 2;
-  
   switch(playMode){
-  	case forward : 
-    if(actualStep < stepLeds) actualStep++; else actualStep = 0;
+    case forward : 
+    if(actualStep < stepPin) actualStep++; else actualStep = 0;
     break;
     case backward :
-    if(actualStep > stepLeds) actualStep--; else actualStep = stepLeds;
+    if(actualStep > stepPin) actualStep--; else actualStep = stepPin;
     break; 
-    case random : 
-	//TODO
+    case randomMode : 
+    actualStep = random(0, maxStep);
     break;
   }  
-  stepLedsOff();
+  stepPinOff();
 }
 
-void stepLedsOff(){
+void stepPinOff(){
  int i = 0;
- while(i++ < stepLeds){
- 	digitalWrite(i, LOW);
+ while(i++ < stepPin){
+  digitalWrite(i, LOW);
  }
 }
