@@ -8,7 +8,7 @@ const int pinTempo = 10;
 /* PlayMode available */
 const int forward = 0;
 const int backward = 1;
-const int random = 2;
+const int randomMode = 2;
 
 void setup()
 {
@@ -20,7 +20,7 @@ void loop()
 {
   int bpm = readTempo();
   blinkTempoLed(bpm);
-  blinkStepPin(forward);
+  blinkStepPin(bpm, forward);
 }
 
 /* read the current tempo from 112 to 1000 */
@@ -34,7 +34,7 @@ void blinkTempoLed(int bpm){
   static int ledState = LOW;
   static unsigned long previousMillis = 0;
   static unsigned long currentMillis = 0;
-  int interval = minute / bpm;
+  static int interval = minute / bpm;
   
   Serial.println(bpm);
   
@@ -49,20 +49,34 @@ void blinkTempoLed(int bpm){
   }
 }
 
-void blinkStepPin(int playMode){
+void blinkStepPin(int bpm, int playMode){
+  const long minute = 60000;
+  static unsigned long previousMillis = 0;
+  static unsigned long currentMillis = 0;
+  static int interval = minute / bpm;
+    
   static int actualStep = 2;
-  switch(playMode){
-    case forward : 
-    if(actualStep < maxStep) actualStep++; else actualStep = 0;
-    break;
-    case backward :
-    if(actualStep > maxStep) actualStep--; else actualStep = maxStep;
-    break; 
-    case random : 
-    actualStep = random(0, maxStep);
-    break;
-  }  
-  stepPinOff();
+  
+  currentMillis = millis();
+  
+  if(currentMillis - previousMillis >= interval){
+    previousMillis = currentMillis;
+    
+    switch(playMode){
+      case forward : 
+      if(actualStep < maxStep) actualStep++; else actualStep = 0;
+      break;
+      case backward :
+      if(actualStep > maxStep) actualStep--; else actualStep = maxStep;
+      break; 
+      case randomMode : 
+      actualStep = random(0, maxStep);
+      break;
+    }  
+    stepPinOff();
+      
+    digitalWrite(actualStep, HIGH);
+  }
 }
 
 void stepPinOff(){
