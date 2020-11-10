@@ -1,14 +1,14 @@
-/* tempo led and knob */
+/* Sequencer max steps knobs */
+const int maxStep = 9;
+
+/* Sequencer tempo knob/pin configuration */
 const int knobTempo = A0;
 const int pinTempo = 10;
+
+/* PlayMode available */
 const int forward = 0;
 const int backward = 1;
-const int randomMode = 2;
-int maxStep = 9;
-
-const int stepPin = 9;
-
-const long minute = 60000;
+const int random = 2;
 
 void setup()
 {
@@ -20,6 +20,7 @@ void loop()
 {
   int bpm = readTempo();
   blinkTempoLed(bpm);
+  blinkStepPin(forward);
 }
 
 /* read the current tempo from 112 to 1000 */
@@ -27,7 +28,9 @@ int readTempo(){
   return map(analogRead(knobTempo), 0, 1023, 1000, 112);
 }
 
+/* Blink the tempo led at the bpm speed */
 void blinkTempoLed(int bpm){
+  const long minute = 60000;
   static int ledState = LOW;
   static unsigned long previousMillis = 0;
   static unsigned long currentMillis = 0;
@@ -47,15 +50,15 @@ void blinkTempoLed(int bpm){
 }
 
 void blinkStepPin(int playMode){
-  static int actualStep = 0;
+  static int actualStep = 2;
   switch(playMode){
     case forward : 
-    if(actualStep < stepPin) actualStep++; else actualStep = 0;
+    if(actualStep < maxStep) actualStep++; else actualStep = 0;
     break;
     case backward :
-    if(actualStep > stepPin) actualStep--; else actualStep = stepPin;
+    if(actualStep > maxStep) actualStep--; else actualStep = maxStep;
     break; 
-    case randomMode : 
+    case random : 
     actualStep = random(0, maxStep);
     break;
   }  
@@ -63,8 +66,8 @@ void blinkStepPin(int playMode){
 }
 
 void stepPinOff(){
- int i = 0;
- while(i++ < stepPin){
-  digitalWrite(i, LOW);
- }
+  int i = 0;
+  while(i++ < maxStep){
+    digitalWrite(i, LOW);
+  }
 }
